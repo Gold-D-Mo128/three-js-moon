@@ -108,6 +108,7 @@ animate();
 //*timeline magic
 const tl = gsap.timeline({defaults:{duration:1}})
 tl.fromTo(moon.scale, {z:0.3, x:0.3, y:0.3}, {z:1, x:1, y:1 })
+tl.fromTo('.header', {scale:0.9, opacity:0},{scale:1, opacity:1})
 
 
 
