@@ -18,6 +18,64 @@ let texture = textureLoader.load(textureURL);
 let displacementMap = textureLoader.load(displacementURL);
 
 function loadModel() {
+  const vShader = `
+  uniform float time;
+  uniform float progress;
+  uniform sampler2D texture1;
+  uniform vec4 resolution;
+  varying vec2 vUv;
+  varying vec3 vPosition;
+  varying vec3 vNormal;
+
+
+  void main(){
+    vUv = uv;
+    vNormal = normal;
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1 );
+  }
+  `;
+
+  const fShader = `
+  uniform float time;
+  uniform vec4 resolution;
+  varying vec2 vUv;
+  varying vec3 vPosition;
+  varying vec3 vNormal;
+
+  // Define a function to generate Perlin noise
+  float random (vec2 st) {
+    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+  }
+
+  float PI = 3.141592653589793238;
+
+  float speed = 0.2; // Adjust the speed of the noise animation
+  float scale = 10.0; // Adjust the scale of the noise
+
+  void main() {
+    // Calculate the noise value based on time and UV coordinates
+    vec2 noiseInput = vUv * scale + vec2(time * speed)  ;
+    float noiseValue = random(noiseInput);
+
+    // Displace the fragment position along the normal vector using noise
+    float displacement = (noiseValue - 0.1) * 0.53; // Adjust the displacement range
+
+    vec3 displacedPosition = vPosition + vNormal * displacement;
+
+    // Calculate the diffuse lighting based on the original normal
+    float diff = dot(vNormal, normalize(vec3(0.0, 1.0, 0.0))); // Light direction is from the top (adjust as needed)
+
+    // Apply color modulation based on the displaced normal and time
+    vec4 waterColor = vec4(1.0, 0.0, 0.4, 1.0) * (0.3 + abs(sin(diff * 8.0 + time)));
+
+    gl_FragColor = waterColor;
+  }
+`;
+  const uniforms = {
+    time: { value: 0 }, // Initialize time to zero, update it in your animation loop
+    resolution: { value: new THREE.Vector4() }, // This will be automatically set by Three.js
+  };
   const loader = new GLTFLoader();
 
   // Load the GLTF model
@@ -28,14 +86,22 @@ function loadModel() {
         // Check if the child is a mesh
         const mesh = child;
         if (mesh.material) {
-          const material = mesh.material;
-          material.color.set(0xc0c0c0);
-          material.metalness = 0.5;
-          material.shininess = 50;
-          material.roughness = 0.6;
+          mesh.material = new THREE.ShaderMaterial({
+            vertexShader: vShader,
+            fragmentShader: fShader,
+            uniforms,
+          });
+          // material.color.set(0xc0c0c0);
+          // material.metalness = 0.5;
+          // material.shininess = 50;
+          // material.roughness = 0.6;
         }
       }
     });
+
+    // Enable shadows for this mesh
+    model.castShadow = true;
+    model.receiveShadow = true; // If needed
 
     // Adjust the model's scale, position, and rotation as needed
     model.scale.set(9, 9, 9);
@@ -60,6 +126,17 @@ function loadModel() {
 
     // Add the model to the scene
     scene.add(model);
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Update the time uniform in your animation loop
+      uniforms.time.value += 0.01; // You can adjust the time increment as needed
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
 
     // Call the animate function to start rendering
     animate();
@@ -114,10 +191,10 @@ const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x000000, 0.5); // A
 hemisphereLight.position.set(1, -10, 1); // Adjust the light direction
 scene.add(hemisphereLight);
 
-// const light = new THREE.PointLight(0xffffff, 1);
-// light.position.set(-100, 10, 50);
-// light.intensity = 0.8;
-// scene.add(light);
+const light = new THREE.PointLight(0xffffff, 1);
+light.position.set(-100, 10, 50);
+light.intensity = 0.8;
+scene.add(light);
 
 // const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 10);
 // hemiLight.color.setHSL(0.6, 1, 0.6);

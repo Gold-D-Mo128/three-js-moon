@@ -17,54 +17,55 @@ const textureLoader = new THREE.TextureLoader();
 let texture = textureLoader.load(textureURL);
 let displacementMap = textureLoader.load(displacementURL);
 
-function loadModel() {
-  const loader = new GLTFLoader();
+// function loadModel() {
+//   const loader = new GLTFLoader();
 
-  // Load the GLTF model
-  loader.load("./assets/man/scene.gltf", (gltf) => {
-    const model = gltf.scene;
+//   // Load the GLTF model
+//   loader.load("./assets/man/scene.gltf", (gltf) => {
+//     const model = gltf.scene;
 
-    model.traverse((child) => {
-      if (child.isMesh) {
-        // Check if the child is a mesh
-        const mesh = child;
-        if (mesh.material) {
-          // Check if the mesh has a material
-          const material = mesh.material;
+//     model.traverse((child) => {
+//       if (child.isMesh) {
+//         // Check if the child is a mesh
+//         const mesh = child;
+//         if (mesh.material) {
+//           // Check if the mesh has a material
+//           const material = mesh.material;
 
-          // Increase the metalness value to make it more reflective
-          material.metalness = 1.0;
+//           // Increase the metalness value to make it more reflective
+//           material.metalness = 1.0;
 
-          // Increase shininess for clearer reflections
-          material.shininess = 100; // Adjust as needed
+//           // Increase shininess for clearer reflections
+//           material.shininess = 100; // Adjust as needed
 
-          // Lower roughness for smoother surface and clearer reflections
-          material.roughness = 0.1; // Adjust as needed
+//           // Lower roughness for smoother surface and clearer reflections
+//           material.roughness = 0.1; // Adjust as needed
 
-          // Set the material's color (optional)
-          material.color.set(0xffffff);
+//           // Set the material's color (optional)
+//           material.color.set(0xffffff);
 
-          // Set the emissive color (optional)
-          material.emissive.set(0x000000);
+//           // Set the emissive color (optional)
+//           material.emissive.set(0x000000);
 
-          // Set the reflectivity to control the intensity of reflections
-          material.reflectivity = 2.0; // Increase for stronger reflections
-        }
-      }
-    });
+//           // Set the reflectivity to control the intensity of reflections
+//           material.reflectivity = 2.0; // Increase for stronger reflections
+//         }
+//       }
+//     });
 
-    // Adjust the model's scale, position, and rotation as needed
-    model.scale.set(8, 8, 8);
-    model.position.set(0, -5, 0);
-    model.rotation.set(0, 0, 0);
+//     // Adjust the model's scale, position, and rotation as needed
+//     model.scale.set(8, 8, 8);
+//     model.position.set(0, -5, 0);
+//     model.rotation.set(0, 0, 0);
 
-    // Add the model to the scene
-    scene.add(model);
+//     // Add the model to the scene
+//     scene.add(model);
 
-    // Call the animate function to start rendering
-    animate();
-  });
-}
+//     // Call the animate function to start rendering
+//     animate();
+//   });
+// }
+
 loadModel();
 
 // Create the circular platform geometry
