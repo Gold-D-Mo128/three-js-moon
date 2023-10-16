@@ -78,7 +78,6 @@ function loadModel() {
   };
   const loader = new GLTFLoader();
 
-  // Load the GLTF model
   loader.load("./assets/head/scene.gltf", (gltf) => {
     const model = gltf.scene;
     model.traverse((child) => {
@@ -91,10 +90,6 @@ function loadModel() {
             fragmentShader: fShader,
             uniforms,
           });
-          // material.color.set(0xc0c0c0);
-          // material.metalness = 0.5;
-          // material.shininess = 50;
-          // material.roughness = 0.6;
         }
       }
     });
@@ -137,44 +132,66 @@ function loadModel() {
     }
 
     animate();
+  });
 
-    // Call the animate function to start rendering
+  //added the glassy overLay
+  loader.load("./assets/head/scene.gltf", (gltf) => {
+    const model = gltf.scene;
+    model.traverse((child) => {
+      if (child.isMesh) {
+        // Check if the child is a mesh
+        const mesh = child;
+        if (mesh.material) {
+          // Create a transparent material with refraction and opacity
+          const glassMaterial = new THREE.MeshPhysicalMaterial({
+            roughness: 0.3,
+            transmission: 1,
+            thickness: 1,
+            envMapIntensity: 3,
+          });
+
+          mesh.material = glassMaterial;
+        }
+      }
+    });
+
+    // Adjust the model's scale, position, and rotation as needed
+    model.scale.set(9.3, 9.3, 9.3);
+    model.position.set(0, 0, 0);
+    model.rotation.set(0, 0, 0);
+
+    var mouse = new THREE.Vector2();
+
+    let plane = new THREE.Plane(new THREE.Vector3(0, 0, 0.079), -1);
+    let raycaster = new THREE.Raycaster();
+    let pointOfIntersection = new THREE.Vector3();
+
+    window.addEventListener("mousemove", function (e) {
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      raycaster.ray.intersectPlane(plane, pointOfIntersection);
+
+      model.lookAt(pointOfIntersection);
+    });
+
+    // Add the model to the scene
+    scene.add(model);
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Update the time uniform in your animation loop
+      uniforms.time.value += 0.01; // You can adjust the time increment as needed
+
+      renderer.render(scene, camera);
+    }
+
     animate();
   });
 }
 loadModel();
-
-// Create the circular platform geometry
-const platformGeometry = new THREE.CylinderGeometry(5, 5, 0.5, 60);
-const platformMaterial = new THREE.MeshStandardMaterial({
-  color: 0x888888,
-  roughness: 0.5,
-  metalness: 0.5,
-});
-const platform = new THREE.Mesh(platformGeometry, platformMaterial);
-platform.position.set(0, -5.2, 0);
-// scene.add(platform);
-
-//................................
-const platformGeometrylight = new THREE.CylinderGeometry(4.5, 4.5, 0.6, 60);
-const platformMaterial2 = new THREE.MeshStandardMaterial({
-  color: 0xffffff,
-  roughness: 0.5,
-  metalness: 0.5,
-  emissive: 0xffffff, // Set the emissive color (green in this example)
-  emissiveIntensity: 1, // Adjust the emissive intensity as needed
-});
-const platformL = new THREE.Mesh(platformGeometrylight, platformMaterial2);
-platformL.position.set(0, -5.2, 0);
-// scene.add(platformL);
-
-const directionalLight2 = new THREE.DirectionalLight(0xffffff, 1.5);
-directionalLight2.position.set(0, 11, 0); // Adjust the light direction
-// platformL.add(directionalLight2);
-
-//*the object we want to add
-
-// scene.add(moon);
 
 //*Sizes
 const Sizes = {
@@ -195,12 +212,6 @@ const light = new THREE.PointLight(0xffffff, 1);
 light.position.set(-100, 10, 50);
 light.intensity = 0.8;
 scene.add(light);
-
-// const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 10);
-// hemiLight.color.setHSL(0.6, 1, 0.6);
-// hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-// hemiLight.position.set(0, 0, 0);
-// scene.add(hemiLight);
 
 //*camera
 const camera = new THREE.PerspectiveCamera(
