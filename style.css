@@ -1,41 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@900&display=swap");
 
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.webgl{
-    position: absolute;
-    background-color: #000000;
-    background-image: linear-gradient(147deg, #000000 0%, #2c2c2c 74%);
-    background-repeat: no-repeat;
-    background-size: cover;
+.webgl {
+  position: absolute;
+  background-color: #000000;
+  background-image: linear-gradient(147deg, #000000 0%, #2c2c2c 74%);
+  background-repeat: no-repeat;
+  background-size: cover;
 }
-body{
-    overflow: hidden;
-    
-}
-
-
-.header{
-    color: white;
-    z-index: 1000;
-    position: absolute;
-    top: 55%;
-    left: 55%;
-    text-align: center;
-    font-family: 'Roboto', sans-serif;
-    font-size: larger;
+body {
+  overflow: hidden;
 }
 
-footer{
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-    bottom: 0;
-    color: grey;
+.header {
+  color: white;
+  z-index: 1000;
+  position: absolute;
+  top: 55%;
+  left: 55%;
+  text-align: center;
+  font-family: "Roboto", sans-serif;
+  font-size: larger;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  bottom: 0;
+  color: grey;
 }

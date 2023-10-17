@@ -50,27 +50,34 @@ function loadModel() {
 
   float PI = 3.141592653589793238;
 
-  float speed = 0.2; // Adjust the speed of the noise animation
-  float scale = 10.0; // Adjust the scale of the noise
+  float speed = 0.1; // Adjust the speed of the noise animation
+  float scale = .4; // Adjust the scale of the noise
 
   void main() {
     // Calculate the noise value based on time and UV coordinates
-    vec2 noiseInput = vUv * scale + vec2(time * speed)  ;
+    vec2 noiseInput = vUv * scale + vec2(time * speed);
     float noiseValue = random(noiseInput);
 
     // Displace the fragment position along the normal vector using noise
-    float displacement = (noiseValue - 0.1) * 0.53; // Adjust the displacement range
+    float displacement = (noiseValue - 1.9) * 0.9; // Adjust the displacement range
 
     vec3 displacedPosition = vPosition + vNormal * displacement;
 
     // Calculate the diffuse lighting based on the original normal
-    float diff = dot(vNormal, normalize(vec3(0.0, 1.0, 0.0))); // Light direction is from the top (adjust as needed)
+    // Modify the light direction to include noise over time
+    float noiseFactor = 0.1; // Adjust the noise intensity
+    vec3 lightDirection = normalize(vec3(0.5, 0.9, 1.1) + noiseFactor * vec3(sin(time), cos(time), 0.0));
 
+    float diff = dot(vNormal, lightDirection);
+    
     // Apply color modulation based on the displaced normal and time
-    vec4 waterColor = vec4(1.0, 0.0, 0.4, 1.0) * (0.3 + abs(sin(diff * 8.0 + time)));
+    vec4 waterColor = vec4(0.26, 0.58, 0.29, 1.0) * (0.5 + abs(sin(diff * 8.0 + time)));
+    // 0.26	0.67	0.54
+
 
     gl_FragColor = waterColor;
-  }
+}
+
 `;
   const uniforms = {
     time: { value: 0 }, // Initialize time to zero, update it in your animation loop
@@ -144,7 +151,7 @@ function loadModel() {
         if (mesh.material) {
           // Create a transparent material with refraction and opacity
           const glassMaterial = new THREE.MeshPhysicalMaterial({
-            roughness: 0.3,
+            roughness: 0.2,
             transmission: 1,
             thickness: 1,
             envMapIntensity: 3,
